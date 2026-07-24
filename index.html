@@ -40,6 +40,7 @@
       border-radius: 8px; color: var(--txt);
       margin-bottom: 12px; font-size: 14px;
     }
+    /* SLIM PROFILE HUNTING BAR Look */
     .search-box {
       padding: 10px 15px;
       border-bottom: 1px solid var(--border);
@@ -62,6 +63,7 @@
     .card {
       border-bottom: 6px solid var(--bg); 
       padding-bottom: 12px; background: var(--card);
+      transition: all 0.3s ease;
     }
     .p-head { 
       display: flex; align-items: center; 
@@ -78,7 +80,6 @@
       padding: 4px 10px; cursor: pointer; 
       font-size: 11px; font-weight: bold;
     }
-    /* ENFORCES RENDER RATIO FOR SYSTEM PHOTOS */
     .media-box { 
       width: 100%; max-height: 450px; 
       overflow: hidden; background: #000; 
@@ -129,7 +130,7 @@
       <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:16px;">🌓</button>
     </div>
 
-    <!-- GATE -->
+    <!-- ENTRY GATES -->
     <div id="authPanel" class="box">
       <h3 id="modeTitle">Create Account</h3>
       <input type="email" id="email" class="input" placeholder="Email">
@@ -138,8 +139,10 @@
       <div onclick="swap()" style="color:var(--accent); cursor:pointer; font-size:13px;" id="swapTxt">Log In instead</div>
     </div>
 
-    <!-- MAIN PLATFORM -->
+    <!-- MAIN APP SCREEN -->
     <div id="mainPanel" class="hidden">
+      
+      <!-- REAL-TIME FILTER HUNTING BAR UI -->
       <div class="search-box" id="searchContainer">
         <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search usernames..." onkeyup="filterFeed()">
       </div>
@@ -148,15 +151,15 @@
         <div style="padding: 15px; border-bottom: 4px solid var(--bg);">
           <input type="text" id="msgText" class="input" placeholder="Caption...">
           <label style="cursor:pointer; font-size:14px; font-weight:bold; color:var(--accent); display:inline-block; margin-bottom:10px;">🖼️ Choose Photo/Video
-            <input type="file" id="mediaFile" style="display:none;" onchange="loadImg()">
+            <input type="file" id="mediaFile" accept="image/*,video/*" style="display:none;" onchange="loadImg()">
           </label>
-          <div id="fileOk" style="font-size:12px; color:var(--accent); font-weight:bold; margin-bottom:10px;"></div>
+          <div id="fileOk" style="font-size:12px; color:var(--sub); margin-bottom:10px;"></div>
           <button class="btn" onclick="post()">Share Post</button>
         </div>
         <div id="postFeed"></div>
       </div>
 
-      <!-- PROFILE GRID -->
+      <!-- PROFILE -->
       <div id="profView" class="hidden" style="padding:15px;">
         <div style="display:flex; align-items:center; gap:15px;">
           <div class="circle" style="width:60px; height:60px;"></div>
@@ -168,7 +171,7 @@
         <div class="grid" id="myGrid"></div>
       </div>
 
-      <!-- CHAT INTERFACE -->
+      <!-- DM WINDOW -->
       <div id="dmPanel" class="dm-drawer">
         <div class="dm-head" onclick="toggleDM()">
           <span>💬 Direct Messages</span><span id="dmArr">▲</span>
@@ -180,7 +183,7 @@
         </div>
       </div>
 
-      <!-- MENU TABS -->
+      <!-- NAVIGATION -->
       <div class="nav">
         <button class="nav-btn" onclick="tab('home')">
           <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -205,10 +208,10 @@
       if(!mail || !document.getElementById("pass").value) return alert("Fill fields!");
       document.getElementById("authPanel").classList.add("hidden");
       document.getElementById("mainPanel").classList.remove("hidden");
-      document.getElementById("myUser").innerText = "@" + mail.split('@');
+      document.getElementById("myUser").innerText = "@" + mail.split('@')[0];
       
-      // PRE-MADE POST TO INITIALLY POPULATE SEARCH RADAR
-      let mockHtml = `<div class="card" data-username="@coder_guy"><div class="p-head"><div style="display:flex; align-items:center;"><div class="circle" style="background:#2ed573"></div><span class="user">@coder_guy</span></div><button class="f-btn" onclick="follow(this)">Follow</button></div><div class="caption"><b>@coder_guy</b> Welcome to KBpost layout interface!</div></div>`;
+      // SAMPLE SIMULATED POST FOR SEARCH TESTING
+      let mockHtml = `<div class="card" data-username="@coder_guy"><div class="p-head"><div style="display:flex; align-items:center;"><div class="circle" style="background:#2ed573"></div><span class="user">@coder_guy</span></div><button class="f-btn" onclick="follow(this)">Follow</button></div><div class="caption"><b>@coder_guy</b> Just exploring the live search filter tool! Try typing 'coder' or 'You' in the box above.</div><div class="actions"><button class="act-btn" onclick="like(this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button></div></div>`;
       document.getElementById("postFeed").innerHTML = mockHtml;
     }
     function toggleTheme() {
@@ -220,12 +223,17 @@
       document.getElementById("profView").classList.toggle("hidden", name !== 'user');
       document.getElementById("searchContainer").classList.toggle("hidden", name !== 'home');
     }
+    /* NEW FILTER SEARCH SEARCH CODE MACHINE */
     function filterFeed() {
       let query = document.getElementById("searchInput").value.toLowerCase();
       let cards = document.getElementsByClassName("card");
       for (let i = 0; i < cards.length; i++) {
         let userAttr = cards[i].getAttribute("data-username").toLowerCase();
-        cards[i].classList.toggle("hidden", !userAttr.includes(query));
+        if (userAttr.includes(query)) {
+          cards[i].classList.remove("hidden");
+        } else {
+          cards[i].classList.add("hidden");
+        }
       }
     }
     function toggleDM() {
@@ -238,21 +246,11 @@
       let b = document.createElement("div"); b.className = "bubble sent"; b.innerText = txt;
       area.appendChild(b); box.value = ""; area.scrollTop = area.scrollHeight;
     }
-    
-    // THE BI-DIRECTIONAL BUFFER REPAIR FIX
     function loadImg() {
-      let files = document.getElementById('mediaFile').files;
-      if (!files || files.length === 0) return;
-      let targetFile = files[0];
-      document.getElementById('fileOk').innerText = "✅ PHOTO READY FOR KBPOST";
-      
-      let reader = new FileReader();
-      reader.onloadend = function() {
-        rawData = reader.result; // Encodes file securely directly to layout space
-      };
-      reader.readAsDataURL(targetFile);
+      let f = document.getElementById('mediaFile').files; if(!f) return;
+      document.getElementById('fileOk').innerText = "📎 Selected: " + f.name;
+      let r = new FileReader(); r.onloadend = function() { rawData = r.result; }; r.readAsDataURL(f);
     }
-    
     function follow(btn) {
       if(btn.innerText === "Follow") {
         btn.innerText = "Following"; btn.style.background = "#eff3f4"; btn.style.color = "#0f1419";
@@ -267,12 +265,12 @@
     }
     function post() {
       let txt = document.getElementById("msgText").value;
-      if (!txt && !rawData) return alert("Type caption or upload photo!");
+      if (!txt && !rawData) return alert("Type caption or choose photo!");
       let name = document.getElementById("myUser").innerText;
       
+      // Assigns metadata hook so the search engine can filter your posts
       let html = `<div class="card" data-username="${name}"><div class="p-head"><div style="display:flex; align-items:center;"><div class="circle"></div><span class="user">${name}</span></div><button class="f-btn" onclick="follow(this)">Follow</button></div>`;
       let item = document.createElement("div");
-      
       if (rawData) {
         html += `<div class="media-box"><img class="media" src="${rawData}"></div>`;
         item.innerHTML = `<img class="grid-img" src="${rawData}">`;
@@ -289,11 +287,9 @@
       
       document.getElementById("postFeed").innerHTML = html + document.getElementById("postFeed").innerHTML;
       count++; document.getElementById("pCount").innerText = count;
-      document.getElementById("msgText").value = ""; 
-      document.getElementById("mediaFile").value = "";
+      document.getElementById("msgText").value = ""; document.getElementById("mediaFile").value = "";
       document.getElementById("fileOk").innerText = ""; rawData = "";
     }
   </script>
 </body>
 </html>
-
