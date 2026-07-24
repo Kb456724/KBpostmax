@@ -1,0 +1,20 @@
+{
+  "name": "KBpost Social Network",
+  "short_name": "KBpost",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1d9bf0",
+  "icons": [
+    {
+      "src": "https://picsum.photos",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://picsum.photos",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
