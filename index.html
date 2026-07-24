@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="manifest" href="manifest.json">
   <title>KBpost</title>
   <style>
     :root {
@@ -41,6 +40,19 @@
       border-radius: 8px; color: var(--txt);
       margin-bottom: 12px; font-size: 14px;
     }
+    /* SLIM PROFILE HUNTING BAR Look */
+    .search-box {
+      padding: 10px 15px;
+      border-bottom: 1px solid var(--border);
+      background-color: var(--card);
+    }
+    .search-input {
+      width: 93%; padding: 8px 12px;
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px; color: var(--txt);
+      font-size: 13px; outline: none;
+    }
     .btn {
       background-color: var(--accent); 
       color: white; border: none; font-size: 14px;
@@ -51,6 +63,7 @@
     .card {
       border-bottom: 6px solid var(--bg); 
       padding-bottom: 12px; background: var(--card);
+      transition: all 0.3s ease;
     }
     .p-head { 
       display: flex; align-items: center; 
@@ -67,28 +80,16 @@
       padding: 4px 10px; cursor: pointer; 
       font-size: 11px; font-weight: bold;
     }
-    /* STYLES THE FULL SIZE PHOTO/VIDEO WINDOW */
     .media-box { 
       width: 100%; max-height: 450px; 
       overflow: hidden; background: #000; 
       display: flex; align-items: center;
     }
-    .media { 
-      width: 100%; height: auto; 
-      display: block; 
-    }
+    .media { width: 100%; height: auto; display: block; }
     .caption { padding: 10px; font-size: 14px; }
-    .actions { 
-      padding: 0 10px; display: flex; gap: 15px; 
-    }
-    .act-btn { 
-      background: none; border: none; cursor: pointer; 
-      padding: 5px 0; display: flex; align-items: center;
-    }
-    .act-btn svg { 
-      width: 22px; height: 22px; fill: none; 
-      stroke: var(--txt); stroke-width: 2; 
-    }
+    .actions { padding: 0 10px; display: flex; gap: 15px; }
+    .act-btn { background: none; border: none; cursor: pointer; }
+    .act-btn svg { width: 22px; height: 22px; fill: none; stroke: var(--txt); stroke-width: 2; }
     .nav {
       position: fixed; bottom: 0; width: 100%; 
       max-width: 420px; height: 60px; z-index: 100;
@@ -96,23 +97,11 @@
       border-top: 1px solid var(--border);
       justify-content: space-around; align-items: center;
     }
-    .nav-btn { 
-      background: none; border: none; cursor: pointer; 
-      padding: 10px; display: flex; align-items: center;
-    }
-    .nav-btn svg { 
-      width: 24px; height: 24px; fill: none; 
-      stroke: var(--txt); stroke-width: 2; 
-    }
+    .nav-btn { background: none; border: none; cursor: pointer; }
+    .nav-btn svg { width: 24px; height: 24px; fill: none; stroke: var(--txt); stroke-width: 2; }
     .hidden { display: none !important; }
-    .grid { 
-      display: grid; grid-template-columns: repeat(3, 1fr); 
-      gap: 4px; padding-top: 10px; 
-    }
-    .grid-img { 
-      width: 100%; aspect-ratio: 1; object-fit: cover; 
-      background: var(--bg); border-radius: 4px; 
-    }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding-top: 10px; }
+    .grid-img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--bg); border-radius: 4px; }
     .dm-drawer {
       position: fixed; bottom: 60px; width: 100%; 
       max-width: 420px; background: var(--card); 
@@ -127,17 +116,12 @@
       display: flex; justify-content: space-between; 
       cursor: pointer; font-size: 14px;
     }
-    .dm-chat { 
-      padding: 10px; height: 160px; overflow-y: auto; 
-      display: flex; flex-direction: column; gap: 6px; 
-    }
-    .bubble { 
-      padding: 6px 10px; border-radius: 12px; 
-      max-width: 70%; font-size: 13px; 
-    }
+    .dm-chat { padding: 10px; height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+    .bubble { padding: 6px 10px; border-radius: 12px; max-width: 70%; font-size: 13px; }
     .sent { background: var(--accent); color: white; align-self: flex-end; }
     .recv { background: var(--bg); color: var(--txt); align-self: flex-start; }
   </style>
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <div class="app-frame">
@@ -146,6 +130,7 @@
       <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:16px;">🌓</button>
     </div>
 
+    <!-- ENTRY GATES -->
     <div id="authPanel" class="box">
       <h3 id="modeTitle">Create Account</h3>
       <input type="email" id="email" class="input" placeholder="Email">
@@ -154,11 +139,17 @@
       <div onclick="swap()" style="color:var(--accent); cursor:pointer; font-size:13px;" id="swapTxt">Log In instead</div>
     </div>
 
+    <!-- MAIN APP SCREEN -->
     <div id="mainPanel" class="hidden">
+      
+      <!-- REAL-TIME FILTER HUNTING BAR UI -->
+      <div class="search-box" id="searchContainer">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search usernames..." onkeyup="filterFeed()">
+      </div>
+
       <div id="feedView">
         <div style="padding: 15px; border-bottom: 4px solid var(--bg);">
           <input type="text" id="msgText" class="input" placeholder="Caption...">
-          <!-- ADDS UPLOAD BUTTON CAPABILITIES BACK -->
           <label style="cursor:pointer; font-size:14px; font-weight:bold; color:var(--accent); display:inline-block; margin-bottom:10px;">🖼️ Choose Photo/Video
             <input type="file" id="mediaFile" accept="image/*,video/*" style="display:none;" onchange="loadImg()">
           </label>
@@ -168,6 +159,7 @@
         <div id="postFeed"></div>
       </div>
 
+      <!-- PROFILE -->
       <div id="profView" class="hidden" style="padding:15px;">
         <div style="display:flex; align-items:center; gap:15px;">
           <div class="circle" style="width:60px; height:60px;"></div>
@@ -179,19 +171,19 @@
         <div class="grid" id="myGrid"></div>
       </div>
 
+      <!-- DM WINDOW -->
       <div id="dmPanel" class="dm-drawer">
         <div class="dm-head" onclick="toggleDM()">
           <span>💬 Direct Messages</span><span id="dmArr">▲</span>
         </div>
-        <div class="dm-chat" id="chatArea">
-          <div class="bubble recv">Welcome to KBpost chat!</div>
-        </div>
+        <div class="dm-chat" id="chatArea"><div class="bubble recv">Welcome to KBpost chat!</div></div>
         <div style="padding:5px; display:flex; gap:5px;">
           <input type="text" id="dmIn" class="input" style="margin:0; width:70%; padding:6px;" placeholder="Message...">
           <button class="btn" style="width:22%; margin:0; padding:6px;" onclick="sendDM()">Send</button>
         </div>
       </div>
 
+      <!-- NAVIGATION -->
       <div class="nav">
         <button class="nav-btn" onclick="tab('home')">
           <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -216,8 +208,11 @@
       if(!mail || !document.getElementById("pass").value) return alert("Fill fields!");
       document.getElementById("authPanel").classList.add("hidden");
       document.getElementById("mainPanel").classList.remove("hidden");
-      document.getElementById("myUser").innerText = "@" + mail.split('@');
-      document.getElementById("postFeed").innerHTML = ""; 
+      document.getElementById("myUser").innerText = "@" + mail.split('@')[0];
+      
+      // SAMPLE SIMULATED POST FOR SEARCH TESTING
+      let mockHtml = `<div class="card" data-username="@coder_guy"><div class="p-head"><div style="display:flex; align-items:center;"><div class="circle" style="background:#2ed573"></div><span class="user">@coder_guy</span></div><button class="f-btn" onclick="follow(this)">Follow</button></div><div class="caption"><b>@coder_guy</b> Just exploring the live search filter tool! Try typing 'coder' or 'You' in the box above.</div><div class="actions"><button class="act-btn" onclick="like(this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button></div></div>`;
+      document.getElementById("postFeed").innerHTML = mockHtml;
     }
     function toggleTheme() {
       let t = document.documentElement.getAttribute('data-theme');
@@ -226,6 +221,20 @@
     function tab(name) {
       document.getElementById("feedView").classList.toggle("hidden", name !== 'home');
       document.getElementById("profView").classList.toggle("hidden", name !== 'user');
+      document.getElementById("searchContainer").classList.toggle("hidden", name !== 'home');
+    }
+    /* NEW FILTER SEARCH SEARCH CODE MACHINE */
+    function filterFeed() {
+      let query = document.getElementById("searchInput").value.toLowerCase();
+      let cards = document.getElementsByClassName("card");
+      for (let i = 0; i < cards.length; i++) {
+        let userAttr = cards[i].getAttribute("data-username").toLowerCase();
+        if (userAttr.includes(query)) {
+          cards[i].classList.remove("hidden");
+        } else {
+          cards[i].classList.add("hidden");
+        }
+      }
     }
     function toggleDM() {
       let d = document.getElementById("dmPanel"); d.classList.toggle("open");
@@ -238,11 +247,9 @@
       area.appendChild(b); box.value = ""; area.scrollTop = area.scrollHeight;
     }
     function loadImg() {
-      let f = document.getElementById('mediaFile').files[0]; if(!f) return;
+      let f = document.getElementById('mediaFile').files; if(!f) return;
       document.getElementById('fileOk').innerText = "📎 Selected: " + f.name;
-      let r = new FileReader(); 
-      r.onloadend = function() { rawData = r.result; }; 
-      r.readAsDataURL(f); // Streams file into local browser space securely
+      let r = new FileReader(); r.onloadend = function() { rawData = r.result; }; r.readAsDataURL(f);
     }
     function follow(btn) {
       if(btn.innerText === "Follow") {
@@ -253,35 +260,25 @@
     }
     function like(btn) {
       let svg = btn.querySelector('svg');
-      if (svg.style.fill === "rgb(249, 24, 128)") {
-        svg.style.fill = "none"; svg.style.stroke = "var(--txt)";
-      } else {
-        svg.style.fill = "#f91880"; svg.style.stroke = "#f91880";
-      }
+      svg.style.fill = (svg.style.fill === "rgb(249, 24, 128)") ? "none" : "#f91880";
+      if(svg.style.fill !== "none") svg.style.stroke = "#f91880"; else svg.style.stroke = "var(--txt)";
     }
     function post() {
       let txt = document.getElementById("msgText").value;
-      if (!txt && !rawData) return alert("Type a caption or pick a file first!");
+      if (!txt && !rawData) return alert("Type caption or choose photo!");
       let name = document.getElementById("myUser").innerText;
       
-      let html = `<div class="card"><div class="p-head"><div style="display:flex; align-items:center;"><div class="circle"></div><span class="user">${name}</span></div><button class="f-btn" onclick="follow(this)">Follow</button></div>`;
-      
+      // Assigns metadata hook so the search engine can filter your posts
+      let html = `<div class="card" data-username="${name}"><div class="p-head"><div style="display:flex; align-items:center;"><div class="circle"></div><span class="user">${name}</span></div><button class="f-btn" onclick="follow(this)">Follow</button></div>`;
       let item = document.createElement("div");
       if (rawData) {
-        html += `<div class="media-box">`;
-        if (rawData.includes('video')) {
-          html += `<video class="media" src="${rawData}" controls loop autoplay muted></video></div>`;
-          item.innerHTML = `<video class="grid-img" src="${rawData}"></video>`;
-        } else {
-          html += `<img class="media" src="${rawData}"></div>`;
-          item.innerHTML = `<img class="grid-img" src="${rawData}">`;
-        }
+        html += `<div class="media-box"><img class="media" src="${rawData}"></div>`;
+        item.innerHTML = `<img class="grid-img" src="${rawData}">`;
         document.getElementById("myGrid").insertBefore(item, document.getElementById("myGrid").firstChild);
       } else {
         item.className = "grid-img"; item.style.padding = "4px"; item.style.fontSize = "10px"; item.innerText = txt;
         document.getElementById("myGrid").insertBefore(item, document.getElementById("myGrid").firstChild);
       }
-      
       html += `<div class="caption"><span class="user">${name}</span> ${txt}</div>`;
       html += `<div class="actions">
         <button class="act-btn" onclick="like(this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
@@ -290,8 +287,7 @@
       
       document.getElementById("postFeed").innerHTML = html + document.getElementById("postFeed").innerHTML;
       count++; document.getElementById("pCount").innerText = count;
-      document.getElementById("msgText").value = ""; 
-      document.getElementById("mediaFile").value = "";
+      document.getElementById("msgText").value = ""; document.getElementById("mediaFile").value = "";
       document.getElementById("fileOk").innerText = ""; rawData = "";
     }
   </script>
